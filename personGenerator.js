@@ -101,39 +101,6 @@ const personGenerator = {
         }
     }`,
 
-    randomDate: `{
-        "count": 3,
-        "list": {
-            "id_1": {
-                "days": "28",
-                "months": [
-                    "февраля"
-                ]
-            },
-            "id_2": {
-                "days": "30",
-                "months": [
-                    "апреля",
-                    "июня",
-                    "сентября",
-                    "ноября"
-                ]
-            },
-            "id_3": {
-                "days": "31",
-                "months": [
-                    "января",
-                    "марта",
-                    "мая",
-                    "июля",
-                    "августа",
-                    "октября",
-                    "декабря"
-                ]
-            }
-        }
-    }`,
-
     GENDER_MALE: 'Мужчина',
     GENDER_FEMALE: 'Женщина',
 
@@ -146,40 +113,41 @@ const personGenerator = {
         return obj.list[prop];
     },
 
-    dateGenerate: function () {
-        let birthDate = [],
-            data,
-            date,
-            month,
-            monthNamber,
-            year;
-        data = this.randomValue(this.randomDate);
-        date = this.randomIntNumber(data.days, 1);
-        monthNamber = this.randomIntNumber(data.months.length - 1, 0);
-        month = data.months[monthNamber];
-        year = this.randomIntNumber(2000, 1950);
-        birthDate.push(date, month, year);
-        return birthDate;
+    randomDate: function () {
+        let options = { year: 'numeric', month: 'long', day: 'numeric' };
+        let dateTimeFormat = new Intl.DateTimeFormat('ru-RU', options);
+        return dateTimeFormat.format(
+            new Date(
+                this.randomIntNumber(1950, 2000),
+                this.randomIntNumber(0, 11),
+                this.randomIntNumber(1, 31)
+            )
+        );
     },
 
     getPerson: function () {
         this.person = {};
-        this.person.gender = Math.floor(Math.random()*2) == 1 ? this.GENDER_MALE : this.GENDER_FEMALE;
-        let date = this.dateGenerate();
+        this.person.gender =
+            Math.floor(Math.random() * 2) == 1
+                ? this.GENDER_MALE
+                : this.GENDER_FEMALE;
         if (this.person.gender == 'Мужчина') {
             this.person.img = 'male.png';
             this.person.firstName = this.randomValue(this.firstNameMaleJson);
             this.person.surname = this.randomValue(this.surnameJson);
             this.person.patronymic = this.randomValue(this.patronymicJson);
-            this.person.date = date[0] + ' ' + date[1] + ' ' + date[2] + ' г.р.';
+            this.person.date = this.randomDate() + 'р.';
             this.person.professoin = this.randomValue(this.professionMaleJson);
         } else {
             this.person.img = 'female.png';
             this.person.firstName = this.randomValue(this.firstNameFemaleJson);
             this.person.surname = this.randomValue(this.surnameJson) + 'a';
-            this.person.patronymic = this.randomValue(this.patronymicJson).slice(0, -2) + 'на';
-            this.person.date = date[0] + ' ' + date[1] + ' ' + date[2] + ' г.р.';
-            this.person.professoin = this.randomValue(this.professionFemaleJson);
+            this.person.patronymic =
+                this.randomValue(this.patronymicJson).slice(0, -2) + 'на';
+            this.person.date = this.randomDate() + 'р.';
+            this.person.professoin = this.randomValue(
+                this.professionFemaleJson
+            );
         }
         return this.person;
     },
